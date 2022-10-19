@@ -1,0 +1,65 @@
+project: microservices-demo
+
+environments:
+  dev:
+    description: dev
+    services:
+      postgresql:
+        runtime: tcloud-tke
+        version: 0.0.1
+        jobs:
+          deploy:
+            steps:
+              - action: tcloud-actions/deploykit-tke-helm-deploy-task@v1
+                with:
+                  name: postgresql
+                  chart: ./postgresql/postgresql-11.6.2.tgz
+                  # 使用values替换chart里的值
+                  values: ./postgresql/values.yml
+      kafka:
+        runtime: tcloud-tke
+        version: 0.0.1
+        jobs:
+          deploy:
+            steps:
+              - action: tcloud-actions/deploykit-tke-helm-deploy-task@v1
+                with:
+                  name: kafka
+                  chart: ./kafka/kafka-17.1.0.tgz
+                  values: ./kafka/values.yml
+      vote:
+        runtime: tcloud-tke
+        version: 0.0.2
+        jobs:
+          deploy:
+            steps:
+              - action: tcloud-actions/deploykit-tke-helm-deploy-task@v1
+                with:
+                  name: vote
+                  chart: ./vote/chart
+                  dockerfile: ./vote/Dockerfile
+                  dockerContext: ./vote
+      result:
+        runtime: tcloud-tke
+        version: 0.0.2
+        jobs:
+          deploy:
+            steps:
+              - action: tcloud-actions/deploykit-tke-helm-deploy-task@v1
+                with:
+                  name: result
+                  chart: ./result/chart
+                  dockerfile: ./result/Dockerfile
+                  dockerContext: ./result
+      worker:
+        runtime: tcloud-tke
+        version: 0.0.2
+        jobs:
+          deploy:
+            steps:
+              - action: tcloud-actions/deploykit-tke-helm-deploy-task@v1
+                with:
+                  name: worker
+                  chart: ./worker/chart
+                  dockerfile: ./worker/Dockerfile
+                  dockerContext: ./worker
